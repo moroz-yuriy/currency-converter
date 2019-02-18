@@ -19,6 +19,8 @@ class CurrencyRateRepository extends ServiceEntityRepository
         parent::__construct($registry, CurrencyRate::class);
     }
 
+
+
     // /**
     //  * @return CurrencyRate[] Returns an array of CurrencyRate objects
     //  */

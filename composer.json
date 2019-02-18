@@ -17,6 +17,7 @@
         "symfony/maker-bundle": "^1.11",
         "symfony/orm-pack": "^1.0",
         "symfony/serializer": "4.2.*",
+        "symfony/twig-bundle": "4.2.*",
         "symfony/yaml": "4.2.*"
     },
     "config": {
@@ -65,6 +66,7 @@
         }
     },
     "require-dev": {
+        "symfony/browser-kit": "4.2.*",
         "symfony/phpunit-bridge": "4.2.*",
         "symfony/web-server-bundle": "4.2.*"
     }

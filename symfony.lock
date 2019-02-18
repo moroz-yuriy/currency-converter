@@ -122,6 +122,9 @@
             "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
     },
+    "symfony/browser-kit": {
+        "version": "v4.2.3"
+    },
     "symfony/cache": {
         "version": "v4.2.3"
     },
@@ -239,6 +242,18 @@
     "symfony/templating": {
         "version": "v4.2.3"
     },
+    "symfony/twig-bridge": {
+        "version": "v4.2.3"
+    },
+    "symfony/twig-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "369b5b29dc52b2c190002825ae7ec24ab6f962dd"
+        }
+    },
     "symfony/var-exporter": {
         "version": "v4.2.3"
     },
@@ -253,6 +268,9 @@
     },
     "symfony/yaml": {
         "version": "v4.2.3"
+    },
+    "twig/twig": {
+        "version": "v2.6.2"
     },
     "willdurand/jsonp-callback-validator": {
         "version": "v1.1.0"

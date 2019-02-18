@@ -2,14 +2,18 @@
 
 namespace App\Command;
 
+use App\Service\Bank;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use App\Service\ClientECB;
-use App\Service\ClientCBR;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use App\Service\ECBBank;
+use App\Service\CBRBank;
+use App\Entity\CurrencyRate;
 
 
 class CurrencyFetchRateCommand extends Command
@@ -18,6 +22,13 @@ class CurrencyFetchRateCommand extends Command
     const _CBR = 2;
 
     protected static $defaultName = 'currency:fetch';
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -36,28 +47,48 @@ class CurrencyFetchRateCommand extends Command
             switch ($src) {
                 case 'ECB':
                     $io->note('Fetch ECB rates');
-                    $client = new ClientECB();
-                    $this->saveRates($client->fetch(), self::_ECB);
+                    $bank = new ECBBank();
+
                     break;
                 case 'CBR':
                     $io->note('Fetch CBR rates');
-                    $client = new ClientCBR();
-                    $this->saveRates($client->fetch(), self::_CBR);
+                    $bank = new CBRBank();
                     break;
                 default:
                     $io->note('You passed invalid argument');
             }
-        } else {
-            $io->note('Fetch both ECB and CBR rates');
-            $clientECB = new ClientECB();
-            $this->saveRates($clientECB->fetch(), self::_ECB);
-            $clientCBR = new ClientCBR();
-            $this->saveRates($clientCBR->fetch(), self::_CBR);
-            var_dump(array_merge($clientECB->fetch(), $clientCBR->fetch()));
+
+            $this->saveRates($bank);
         }
     }
 
-    private function saveRates($rates, $source)
+    private function saveRates(Bank $bank)
     {
+        $em = $this->container->get('doctrine')->getManager();
+        $repository = $this->container->get('doctrine')->getRepository(CurrencyRate::class);
+
+        $rates = $bank->fetch();
+        $source =  $bank->getBankID();
+
+        foreach ($rates as $rate) {
+            var_dump($rate);
+            $currency_rate = $repository->findOneBy([
+                'date' => new \DateTime($rate->date),
+                'currency' => $rate->currency,
+                'source' => $source
+            ]);
+
+            if (!$currency_rate) {
+                $currency_rate = new CurrencyRate();
+            }
+
+            $currency_rate->setDate(new \DateTime($rate->date));
+            $currency_rate->setCurrency($rate->currency);
+            $currency_rate->setRate($rate->rate);
+            $currency_rate->setSource($source);
+
+            $em->persist($currency_rate);
+            $em->flush();
+        }
     }
 }
